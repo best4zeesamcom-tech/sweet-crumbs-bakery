@@ -1,0 +1,136 @@
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #35251f;
+  background: #fffaf4;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --cream: #fffaf4;
+  --cream-dark: #f5ede3;
+  --brown: #493027;
+  --brown-dark: #302019;
+  --caramel: #b77a50;
+  --muted: #89796e;
+  --border: #eee3d8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #b77a50;
+  outline-offset: 4px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: #e9cbb1;
+  color: #302019;
+}
+
+.font-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.container-main {
+  width: min(1240px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.section-padding {
+  padding-block: 90px;
+}
+
+@media (max-width: 640px) {
+  .container-main {
+    width: min(100% - 32px, 1240px);
+  }
+
+  .section-padding {
+    padding-block: 58px;
+  }
+}
+.admin-input {
+  width: 100%;
+  border: 1px solid #e9ddd1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  outline: none;
+  background: white;
+  color: #493027;
+  transition: border-color 0.2s ease;
+}
+
+.admin-input:focus {
+  border-color: #b77a50;
+}
+
+.admin-input::placeholder {
+  color: #b5a69b;
+}
+/* Accessibility: visible keyboard focus */
+:focus-visible {
+  outline: 3px solid #b77a50;
+  outline-offset: 3px;
+}
+
+/* Prevent focus outlines from being hidden by rounded containers */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #b77a50;
+  outline-offset: 3px;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
