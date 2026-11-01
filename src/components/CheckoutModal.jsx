@@ -1,10 +1,8 @@
+
 import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 
 const BAKERY_WHATSAPP_NUMBER = "923357089076";
-// Replace this with the bakery's WhatsApp number.
-// Format: country code + number, without + or spaces.
-// Example format: 923001234567
 
 function formatPrice(amount) {
   return `Rs ${amount.toLocaleString("en-PK")}`;
@@ -22,22 +20,26 @@ export default function CheckoutModal({ isOpen, onClose }) {
 
   const [errors, setErrors] = useState({});
 
+  // Escape key handling
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen, onClose]);
+
+  // All hooks must be above this conditional return
   if (!isOpen) return null;
-useEffect(() => {
-  if (!isOpen) return;
 
-  const handleEscape = (event) => {
-    if (event.key === "Escape") {
-      onClose();
-    }
-  };
-
-  window.addEventListener("keydown", handleEscape);
-
-  return () => {
-    window.removeEventListener("keydown", handleEscape);
-  };
-}, [isOpen, onClose]);
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -80,6 +82,7 @@ useEffect(() => {
     }
 
     setErrors(newErrors);
+
     return Object.keys(newErrors).length === 0;
   };
 
@@ -88,22 +91,28 @@ useEffect(() => {
 
     if (!validateForm()) return;
 
-    if (!/^\d{10,15}$/.test(BAKERY_WHATSAPP_NUMBER) ||
-        BAKERY_WHATSAPP_NUMBER.includes("X")) {
-      alert("Please configure the bakery WhatsApp number in CheckoutModal.jsx first.");
+    if (
+      !/^\d{10,15}$/.test(BAKERY_WHATSAPP_NUMBER) ||
+      BAKERY_WHATSAPP_NUMBER.includes("X")
+    ) {
+      alert(
+        "Please configure the bakery WhatsApp number in CheckoutModal.jsx first."
+      );
       return;
     }
 
-    const orderItems = cartItems.map((item, index) => {
-      return (
-        `${index + 1}. ${item.product.name}\n` +
-        `   Option: ${item.option?.name || "Standard"}\n` +
-        `   Flavour: ${item.flavour || "Standard"}\n` +
-        `   Quantity: ${item.quantity}\n` +
-        `   Unit price: ${formatPrice(item.unitPrice)}\n` +
-        `   Item total: ${formatPrice(item.unitPrice * item.quantity)}`
-      );
-    }).join("\n\n");
+    const orderItems = cartItems
+      .map((item, index) => {
+        return (
+          `${index + 1}. ${item.product.name}\n` +
+          `   Option: ${item.option?.name || "Standard"}\n` +
+          `   Flavour: ${item.flavour || "Standard"}\n` +
+          `   Quantity: ${item.quantity}\n` +
+          `   Unit price: ${formatPrice(item.unitPrice)}\n` +
+          `   Item total: ${formatPrice(item.unitPrice * item.quantity)}`
+        );
+      })
+      .join("\n\n");
 
     const message = [
       "🍰 *NEW ORDER - SWEET CRUMBS BAKERY*",
@@ -129,7 +138,15 @@ useEffect(() => {
     const whatsappUrl =
       `https://wa.me/${BAKERY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
-    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+    // Open WhatsApp directly from the user's click.
+    const whatsappWindow = window.open(whatsappUrl, "_blank");
+
+    if (whatsappWindow) {
+      whatsappWindow.opener = null;
+    } else {
+      // Fallback if the browser blocks the popup.
+      window.location.href = whatsappUrl;
+    }
   };
 
   return (
@@ -145,11 +162,13 @@ useEffect(() => {
         aria-labelledby="checkout-title"
         className="w-full max-w-2xl max-h-[92vh] overflow-y-auto bg-[#fffaf4] rounded-3xl shadow-2xl"
       >
+        {/* Header */}
         <div className="sticky top-0 z-10 bg-[#fffaf4] border-b border-[#eee3d8] px-6 py-5 flex items-center justify-between">
           <div>
             <span className="text-xs uppercase tracking-[0.18em] font-bold text-[#b77a50]">
               Almost there
             </span>
+
             <h2
               id="checkout-title"
               className="font-display text-2xl sm:text-3xl text-[#493027] mt-1"
@@ -175,10 +194,15 @@ useEffect(() => {
           </h3>
 
           <div className="space-y-5">
+            {/* Full name */}
             <div>
-              <label htmlFor="customer-name" className="block text-sm font-medium text-[#493027] mb-2">
+              <label
+                htmlFor="customer-name"
+                className="block text-sm font-medium text-[#493027] mb-2"
+              >
                 Full name *
               </label>
+
               <input
                 id="customer-name"
                 name="name"
@@ -191,6 +215,7 @@ useEffect(() => {
                 aria-describedby={errors.name ? "name-error" : undefined}
                 className="w-full rounded-xl border border-[#e6d8c9] bg-white px-4 py-3 text-sm text-[#493027] outline-none focus:border-[#b77a50]"
               />
+
               {errors.name && (
                 <p id="name-error" className="text-xs text-red-600 mt-2">
                   {errors.name}
@@ -198,10 +223,15 @@ useEffect(() => {
               )}
             </div>
 
+            {/* Phone */}
             <div>
-              <label htmlFor="customer-phone" className="block text-sm font-medium text-[#493027] mb-2">
+              <label
+                htmlFor="customer-phone"
+                className="block text-sm font-medium text-[#493027] mb-2"
+              >
                 Phone number *
               </label>
+
               <input
                 id="customer-phone"
                 name="phone"
@@ -214,6 +244,7 @@ useEffect(() => {
                 aria-describedby={errors.phone ? "phone-error" : undefined}
                 className="w-full rounded-xl border border-[#e6d8c9] bg-white px-4 py-3 text-sm text-[#493027] outline-none focus:border-[#b77a50]"
               />
+
               {errors.phone && (
                 <p id="phone-error" className="text-xs text-red-600 mt-2">
                   {errors.phone}
@@ -221,10 +252,15 @@ useEffect(() => {
               )}
             </div>
 
+            {/* Address */}
             <div>
-              <label htmlFor="customer-address" className="block text-sm font-medium text-[#493027] mb-2">
+              <label
+                htmlFor="customer-address"
+                className="block text-sm font-medium text-[#493027] mb-2"
+              >
                 Delivery address *
               </label>
+
               <textarea
                 id="customer-address"
                 name="address"
@@ -237,6 +273,7 @@ useEffect(() => {
                 aria-describedby={errors.address ? "address-error" : undefined}
                 className="w-full resize-y rounded-xl border border-[#e6d8c9] bg-white px-4 py-3 text-sm text-[#493027] outline-none focus:border-[#b77a50]"
               />
+
               {errors.address && (
                 <p id="address-error" className="text-xs text-red-600 mt-2">
                   {errors.address}
@@ -244,10 +281,16 @@ useEffect(() => {
               )}
             </div>
 
+            {/* Additional note */}
             <div>
-              <label htmlFor="customer-note" className="block text-sm font-medium text-[#493027] mb-2">
-                Additional note <span className="text-[#89796e] font-normal">(Optional)</span>
+              <label
+                htmlFor="customer-note"
+                className="block text-sm font-medium text-[#493027] mb-2"
+              >
+                Additional note{" "}
+                <span className="text-[#89796e] font-normal">(Optional)</span>
               </label>
+
               <textarea
                 id="customer-note"
                 name="note"
@@ -268,11 +311,15 @@ useEffect(() => {
 
             <div className="space-y-3">
               {cartItems.map((item) => (
-                <div key={item.cartId} className="flex justify-between gap-4 text-sm">
+                <div
+                  key={item.cartId}
+                  className="flex justify-between gap-4 text-sm"
+                >
                   <div className="min-w-0">
                     <p className="text-[#493027] font-medium">
                       {item.product.name} × {item.quantity}
                     </p>
+
                     <p className="text-xs text-[#89796e] mt-1">
                       {item.option?.name || "Standard"}
                       {item.flavour ? ` · ${item.flavour}` : ""}
@@ -294,11 +341,14 @@ useEffect(() => {
 
               <div className="flex justify-between text-[#89796e]">
                 <span>Delivery</span>
-                <span>{deliveryFee === 0 ? "FREE" : formatPrice(deliveryFee)}</span>
+                <span>
+                  {deliveryFee === 0 ? "FREE" : formatPrice(deliveryFee)}
+                </span>
               </div>
 
               <div className="flex justify-between items-center pt-3 border-t border-[#e6d8c9]">
                 <span className="font-bold text-[#493027]">Total</span>
+
                 <span className="font-display text-2xl font-bold text-[#493027]">
                   {formatPrice(total)}
                 </span>
@@ -310,6 +360,7 @@ useEffect(() => {
             <p className="text-sm text-red-600 mt-4">{errors.cart}</p>
           )}
 
+          {/* WhatsApp order button */}
           <button
             type="submit"
             disabled={cartItems.length === 0}

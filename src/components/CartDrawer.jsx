@@ -34,6 +34,10 @@ export default function CartDrawer({ isOpen, onClose, onCheckout }) {
 
   if (!isOpen) return null;
 
+  const handleCheckout = () => {
+    onCheckout();
+  };
+
   return (
     <div
       className="fixed inset-0 z-[120] bg-black/50"
@@ -56,8 +60,10 @@ export default function CartDrawer({ isOpen, onClose, onCheckout }) {
             >
               Your Shopping Bag
             </h2>
+
             <p className="text-xs text-[#89796e] mt-1">
-              {cartItems.length} different {cartItems.length === 1 ? "item" : "items"}
+              {cartItems.length} different{" "}
+              {cartItems.length === 1 ? "item" : "items"}
             </p>
           </div>
 
@@ -106,6 +112,8 @@ export default function CartDrawer({ isOpen, onClose, onCheckout }) {
                   <img
                     src={item.product.image}
                     alt={item.product.name}
+                    loading="lazy"
+                    decoding="async"
                     className="w-24 h-24 rounded-2xl object-cover bg-[#f5ede3]"
                   />
 
@@ -198,18 +206,19 @@ export default function CartDrawer({ isOpen, onClose, onCheckout }) {
 
             <div className="flex justify-between items-center border-t border-[#eee3d8] mt-4 pt-4">
               <span className="font-semibold text-[#493027]">Total</span>
+
               <span className="font-display text-2xl font-bold text-[#493027]">
                 {formatPrice(total)}
               </span>
             </div>
 
-           <button
-  type="button"
-  onClick={onCheckout}
-  className="w-full mt-5 rounded-full bg-[#493027] text-white py-4 text-sm font-bold hover:bg-[#302019] transition"
->
-  Proceed to Checkout
-</button>
+            <button
+              type="button"
+              onClick={handleCheckout}
+              className="w-full mt-5 rounded-full bg-[#493027] text-white py-4 text-sm font-bold hover:bg-[#302019] transition"
+            >
+              Proceed to Checkout
+            </button>
 
             <p className="text-center text-xs text-[#89796e] mt-3">
               Freshly baked and prepared for your order.
